@@ -17,73 +17,76 @@ import { Abi } from "viem";
 
 function App() {
   const account = useAccount();
-  // const chainId = useChainId();
+  const chainId = useChainId();
   const { connectors, connect, status, error } = useConnect();
   const { disconnect } = useDisconnect();
 
-  // const tetherContract: {
-  //   abi: Abi;
-  //   address: `0x${string}`;
-  // } = {
-  //   abi: TetherAbi as Abi,
-  //   address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-  // };
+  const tetherContract: {
+    abi: Abi;
+    address: `0x${string}`;
+  } = {
+    abi: TetherAbi as Abi,
+    address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+  };
 
-  // const mockTokenContract: {
-  //   abi: Abi;
-  //   address: `0x${string}`;
-  // } = {
-  //   abi: MockTokenAbi as Abi,
-  //   address: "0xb89d3e6C1554F218f72B67b598B099E8922579cf",
-  // };
+  const mockTokenContract: {
+    abi: Abi;
+    address: `0x${string}`;
+  } = {
+    abi: MockTokenAbi as Abi,
+    address: "0xb89d3e6C1554F218f72B67b598B099E8922579cf",
+  };
 
-  // const {
-  //   data: hash,
-  //   isPending,
-  //   error: writeContractError,
-  //   writeContract,
-  // } = useWriteContract();
+  const {
+    data: hash,
+    isPending,
+    error: writeContractError,
+    writeContract,
+  } = useWriteContract();
 
-  // const result = useReadContract({
-  //   ...tetherContract,
-  //   functionName: "totalSupply",
-  //   query: {
-  //     select(data) {
-  //       return Number(data || 0);
-  //     },
-  //     enabled: chainId === 1,
-  //   },
-  // });
+  const result = useReadContract({
+    ...tetherContract,
+    functionName: "totalSupply",
+    query: {
+      select(data) {
+        return Number(data || 0);
+      },
+      enabled: chainId === 1,
+    },
+  });
 
-  // const { data } = useReadContracts({
-  //   contracts: [
-  //     {
-  //       ...tetherContract,
-  //       functionName: "decimals",
-  //     },
-  //     {
-  //       ...tetherContract,
-  //       functionName: "symbol",
-  //     },
-  //   ],
-  // });
+  const { data } = useReadContracts({
+    contracts: [
+      {
+        ...tetherContract,
+        functionName: "decimals",
+      },
+      {
+        ...tetherContract,
+        functionName: "symbol",
+      },
+    ],
+  });
 
-  // const [formattedAmount, symbol] = useMemo(() => {
-  //   if (data && result?.data) {
-  //     const [decimals, symbol] = data?.map((e) => e?.result);
+  const [formattedAmount, symbol] = useMemo(() => {
+    if (data && result?.data) {
+      const [decimals, symbol] = data?.map((e) => e?.result);
 
-  //     return [result?.data / 10 ** Number(decimals), String(symbol)];
-  //   }
-  //   return [0, ""];
-  // }, [data, result]);
+      return [result?.data / 10 ** Number(decimals), String(symbol)];
+    }
+    return [0, ""];
+  }, [data, result]);
 
-  // const mint = async () => {
-  //   await writeContract({
-  //     ...mockTokenContract,
-  //     functionName: "mint",
-  //     args: ["0x5148e3990341147Cc576585eC36026ef24c8f5D2", BigInt("1")],
-  //   });
-  // };
+  const mint = async () => {
+    await writeContract({
+      ...mockTokenContract,
+      functionName: "mint",
+      args: [
+        "0x5148e3990341147Cc576585eC36026ef24c8f5D2",
+        BigInt("10000000000000000000"),
+      ],
+    });
+  };
 
   return (
     <>
@@ -120,15 +123,15 @@ function App() {
         <div>{error?.message}</div>
       </div>
 
-      {/* <div>
+      <div>
         <h2>Read Contract</h2>
         <div>Call fetch total supply status: {result?.status}</div>
         <div>Raw total supply: {result?.data}</div>
-        <div>Formatted total supply: {formattedAmount}</div>
+        <div>Formatted total supply: {formattedAmount?.toLocaleString()}</div>
         <div>Token symbol: {symbol}</div>
-      </div> */}
+      </div>
 
-      {/* <div>
+      <div>
         <h2>Write Contract</h2>
         <button disabled={isPending} onClick={mint}>
           {isPending ? "Confirming..." : "Mint"}
@@ -141,7 +144,7 @@ function App() {
               writeContractError.message}
           </div>
         )}
-      </div> */}
+      </div>
     </>
   );
 }
